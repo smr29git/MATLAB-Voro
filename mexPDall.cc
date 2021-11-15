@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "mex.h"
 #include <cmath>
@@ -12,16 +11,27 @@ using namespace voro;
   This is the function that we will write our mex file to interface with
 */
 
-int powerfn(double, double, double, double, double, double, const int&, double*, double*, double*, double*, double*,bool);
+int powerfn(double, double, double, double, double, double, const int&, double*, double*, double*, double*, double*,mxArray*,bool);
 
 /*
   Function definition
 */
 
-int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,double z_max,const int& N,double* X,double* w, double* vol, double* trans, double* xc,bool period){
+int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,double z_max,const int& N,double* X,double* w, double* vol, double* trans,double* xc,mxArray* VFN,bool period){
+  
+  /* Inputs are x_min,x_max,y_min,y_max,z_min,z_max which are coordinates of the box
+  N is the number of seeds/generators
+  X is a pointer to the coordinates of the seeds/generators
+  w is a pointer to the weights
+  vol is a pointer to the volumes
+  trans is a pointer to the 2nd moments
+  xc is a pointer to the cell centroids
+  VFN is a pointer to a mex array
+  period is a boolean controlling the periodicity */
 
+  
   // The numbers n_x,n_y,n_z are related to efficiency of the calculations in making a periodic cell
-
+  
   const int n_x=6,n_y=6,n_z=6;
   container_poly* con;
   con=new container_poly(x_min,x_max,y_min,y_max,z_min,z_max,n_x,n_y,n_z,period,period,period,16);
@@ -39,13 +49,14 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
   }
 
   // Calculate the cells
+
   c_loop_all cla(*con);
-  voronoicell c;
+  voronoicell_neighbor c;
 
   int Np=0;
   if(cla.start()) do if (con->compute_cell(c,cla)) {
 	int id;
-	// Get the position and ID information for the particle
+       	// Get the position and ID information for the particle
 	// currently being considered by the loop. Ignore the radius
 	// information.
 
@@ -69,9 +80,106 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
 	xc[id]=cx+x;xc[id+N]=cy+y;xc[id+2*N]=cz+z;
 	
 	Np++;
+
+	// Create a vector to store the vertices of the cell
+	std::vector<double> vs;
+	c.vertices(x,y,z,vs);
+	// Work out the number of vertices of the cell
+	int Nv=vs.size()/3;
+
+	// Create a double matrix to enter into the cell array to return to MatLab
+	mxArray* tmp;
+	double* tmpV;
+	tmp=mxCreateDoubleMatrix(Nv,3,mxREAL);
+	tmpV=mxGetPr(tmp);
+
+	// Transfer the data from vs (the vector of vertices) to the output
+	for(int j=0;j<Nv;j++){
+	  tmpV[j]=vs[3*j];tmpV[j+Nv]=vs[3*j+1];tmpV[j+2*Nv]=vs[3*j+2];
+	}
+
+	// Obtain the single index to each cell entry and assign the data
+	mwIndex subs[2];
+	// The row is the seed/generator/particle id
+	subs[0]=id;
+	// The column for the vertex data is the 1st column (zero indexing so equal to 0)
+	subs[1]=0;
+	mwIndex ind=mxCalcSingleSubscript(VFN,(mwSize)2,subs);
+	// Assign the vertex data for cell 'id'
+	mxSetCell(VFN,ind,tmp);
+
+	/* Face data
+	   The column for the face data is the 2nd column (zero indexing so equal to 1) */
+	subs[1]=1;
+	ind=mxCalcSingleSubscript(VFN,(mwSize)2,subs);
+	
+	// All the vertices of all the faces as an integer list
+	std::vector<int> fv;
+	c.face_vertices(fv);
+	int Nfv=fv.size();
+
+	// First work out how many faces there are
+	int nf=c.number_of_faces();
+
+	// Now we extract the individual faces
+	mxArray* face_cell_array;
+	face_cell_array=mxCreateCellMatrix((mwSize)nf,(mwSize)1);
+	int j=0;
+	
+	for(int fi=0;fi<nf;fi++){
+	  /*
+	    For each face we extract the face indices (remember that in C they are zero indexed
+	    but in MatLab we want indexing from 1 */
+
+	  // Make appropriate pointers
+	  mxArray* tmpj;
+	  int* tmpjFV;
+
+	  // Find the number of vertices for the face
+	  int l=fv[j];
+
+	  // Create an integer array to contain the face vertices of the current face
+	  tmpj=mxCreateNumericMatrix(1,l,mxINT32_CLASS,mxREAL);
+	  tmpjFV=(int*) mxGetData(tmpj);
+
+	  // Write the face vertex indices
+	  for(int k=0;k<l;k++){
+	    tmpjFV[k]=fv[j+k+1]+1;
+	  }
+	  j=j+l+1;
+	  // Assign the face vertices to the cell array of face vertices
+	  mxSetCell(face_cell_array,fi,tmpj);
+	}
+
+	// Assign the set of face vertices for each face to the output
+	mxSetCell(VFN,ind,face_cell_array);
+	
+	/* Neighbour data
+	   The column for the neighbour data is the 3rd column (zero indexing so equal to 2) */
+	
+	subs[1]=2;
+	ind=mxCalcSingleSubscript(VFN,(mwSize)2,subs);
+
+	std::vector<int> cell_neighbors;
+	c.neighbors(cell_neighbors);
+	int Ncn=cell_neighbors.size();
+
+	mxArray* tmpic;
+	int* tmpicn;
+	tmpic=mxCreateNumericMatrix(Ncn,1,mxINT32_CLASS,mxREAL);
+	tmpicn=(int*) mxGetData(tmpic);
+
+	//	mexPrintf("Cell %d has %d neighbours\n",id,Ncn);
+	for(int j=0;j<Ncn;j++){
+	  // MatLab uses indexing from 1, so we add 1 to the cell id to correctly record the neighbour information
+	  tmpicn[j]=cell_neighbors[j]+1;
+	}
+
+	// Assign the neighbour information to the output
+	mxSetCell(VFN,ind,tmpic);
+	
       } while (cla.inc());
-    
-    
+     
   // Make sure we delete any 'new' variables, to free up memory
     
   delete con;
@@ -84,24 +192,23 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
 
 void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
 
-  // The default box size is [0,1]x[0,1]x[0,1]
+  // Cell array variables
+  
+  mxArray* verts_faces_neighs; // This is the name of the cell array
+
+  mwSize ndim=2; // This is the number of dimensions of the cell array
+  mwSize* dims; // This is an array of the dimensions of the cell array
+
+  // Default box size [0,1]x[0,1]x[0,1]
   double xmin=0;double ymin=0;double zmin=0;
   double xmax=1;double ymax=1;double zmax=1;
 
-  // An array to store the input box dimensions
   double* box;
-  // An array to store the input seed locations
   double* X;
-  // An array to store the input weights
   double* W;
-
-  // Number of seeds (to be calculated based on the inputs)
   int N;
-
-  // Input periodic flag
   bool period=false;
 
-  // Return to this
   bool Wflag=false;
 
   if(nrhs==0){
@@ -110,7 +217,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   }
   else if(nrhs==1){
     /*
-      In the case of only one input argument it should be a double array containing generator locations. Size and shape should be checked to see that a valid list of generator locations has been provided.
+      In the case of only one input argument it should be a double array containing generator locations. Size and shape should be checked to see that valid list of generator locations has been provided.
     */
     mxClassID cat1;
     cat1=mxGetClassID(prhs[0]);
@@ -371,10 +478,16 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
     }
   }
 
-  // At this stage we have parsed all the arguments and now can sensibly process them to make the output data
-
-  // Output variables
-
+  // At this stage we have parsed all the arguments and now can sensibly process the arguments to make the output data
+  
+  /*
+    Here we create the cell array that contains the vertices, face information and neighbour information of each Laguerre cell
+    The cell array will be an Nc x 3 array, the first entry is the vertices of the cell
+  */
+  
+  verts_faces_neighs=mxCreateCellMatrix((mwSize)N,(mwSize)3);
+  
+  // Output variable pointers
   double* XC;
   double* V;
   double* T;
@@ -383,23 +496,24 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   plhs[0]=mxCreateDoubleMatrix(N,1,mxREAL);
   V=mxGetPr(plhs[0]);
 
-  // Set the second return values to be the transport costs of the cells
+  // Set the second return value to be the transport costs of the cells
   plhs[1]=mxCreateDoubleMatrix(N,1,mxREAL);
   T=mxGetPr(plhs[1]);
 
-  // Set the third return value to be the centroids of the cells
+  // Set the third reutrn value to be the centroids of the cells
   plhs[2]=mxCreateDoubleMatrix(N,3,mxREAL);
   XC=mxGetPr(plhs[2]);
 
-  // NP is the number of generators in the diagram
+  // Set the fourth return value to be a cell array containing vertices, faces and neighbours
+  plhs[3]=verts_faces_neighs;
+
   int NP;
-  NP=powerfn(xmin,xmax,ymin,ymax,zmin,zmax,N,X,W,V,T,XC,period);
+  NP=powerfn(xmin,xmax,ymin,ymax,zmin,zmax,N,X,W,V,T,XC,verts_faces_neighs,period);
 
   // Clean up
 
   if(Wflag){
     delete [] W;
   }
-
 }
 
