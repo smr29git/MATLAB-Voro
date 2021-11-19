@@ -11,11 +11,11 @@ vorodir='voro_src/src_3d/';
 vorofiles={'cell.cc' 'common.cc' 'container.cc' 'unitcell.cc' 'v_compute.cc' 'c_loops.cc' 'v_base.cc' 'wall.cc' 'pre_container.cc' 'container_prd.cc'};
 
 % Build mexPD
-eval(['mex mexPD.cc ' strjoin(strcat(vorodir,vorofiles))]);
+eval([sprintf('mex -I%s ',vorodir) 'mexPD.cc ' strjoin(strcat(vorodir,vorofiles))]);
 
 % Build mexPDall
-eval(['mex mexPDall.cc ' strjoin(strcat(vorodir,vorofiles))]);
+eval([sprintf('mex -I%s ',vorodir) 'mexPDall.cc ' strjoin(strcat(vorodir,vorofiles))]);
 
 % Build mexPDallfaces
-eval(['mex mexPDallfaces.cc ' strjoin(strcat(vorodir,vorofiles))]);
+eval([sprintf('mex -I%s ',vorodir) 'mexPDallfaces.cc ' strjoin(strcat(vorodir,vorofiles))]);
 
