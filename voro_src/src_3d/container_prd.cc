@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
@@ -28,8 +28,7 @@ namespace voro {
  *                particle. */
 container_periodic_base::container_periodic_base(double bx_,double bxy_,double by_,
 		double bxz_,double byz_,double bz_,int nx_,int ny_,int nz_,int init_mem_,int ps_)
-	: unitcell(bx_,bxy_,by_,bxz_,byz_,bz_),
-	voro_base(nx_,ny_,nz_,bx_/nx_,by_/ny_,bz_/nz_), max_len_sq(unit_voro.max_radius_squared()),
+	: unitcell(bx_,bxy_,by_,bxz_,byz_,bz_), voro_base(nx_,ny_,nz_,bx_/nx_,by_/ny_,bz_/nz_),
 	ey(int(max_uv_y*ysp+1)), ez(int(max_uv_z*zsp+1)), wy(ny+ey), wz(nz+ez),
 	oy(ny+2*ey), oz(nz+2*ez), oxyz(nx*oy*oz), id(new int*[oxyz]), p(new double*[oxyz]),
 	co(new int[oxyz]), mem(new int[oxyz]), img(new char[oxyz]), init_mem(init_mem_), ps(ps_) {
@@ -94,7 +93,6 @@ container_periodic_poly::container_periodic_poly(double bx_,double bxy_,double b
 void container_periodic::put(int n,double x,double y,double z) {
 	int ijk;
 	put_locate_block(ijk,x,y,z);
-	for(int l=0;l<co[ijk];l++) check_duplicate(n,x,y,z,id[ijk][l],p[ijk]+3*l);
 	id[ijk][co[ijk]]=n;
 	double *pp=p[ijk]+3*co[ijk]++;
 	*(pp++)=x;*(pp++)=y;*pp=z;
@@ -107,7 +105,6 @@ void container_periodic::put(int n,double x,double y,double z) {
 void container_periodic_poly::put(int n,double x,double y,double z,double r) {
 	int ijk;
 	put_locate_block(ijk,x,y,z);
-	for(int l=0;l<co[ijk];l++) check_duplicate(n,x,y,z,id[ijk][l],p[ijk]+4*l);
 	id[ijk][co[ijk]]=n;
 	double *pp=p[ijk]+4*co[ijk]++;
 	*(pp++)=x;*(pp++)=y;*(pp++)=z;*pp=r;
@@ -123,7 +120,6 @@ void container_periodic_poly::put(int n,double x,double y,double z,double r) {
 void container_periodic::put(int n,double x,double y,double z,int &ai,int &aj,int &ak) {
 	int ijk;
 	put_locate_block(ijk,x,y,z,ai,aj,ak);
-	for(int l=0;l<co[ijk];l++) check_duplicate(n,x,y,z,id[ijk][l],p[ijk]+3*l);
 	id[ijk][co[ijk]]=n;
 	double *pp=p[ijk]+3*co[ijk]++;
 	*(pp++)=x;*(pp++)=y;*pp=z;
@@ -139,8 +135,6 @@ void container_periodic::put(int n,double x,double y,double z,int &ai,int &aj,in
 void container_periodic_poly::put(int n,double x,double y,double z,double r,int &ai,int &aj,int &ak) {
 	int ijk;
 	put_locate_block(ijk,x,y,z,ai,aj,ak);
-	for(int l=0;l<co[ijk];l++) check_duplicate(n,x,y,z,id[ijk][l],p[ijk]+4*l);
-
 	id[ijk][co[ijk]]=n;
 	double *pp=p[ijk]+4*co[ijk]++;
 	*(pp++)=x;*(pp++)=y;*(pp++)=z;*pp=r;
@@ -452,15 +446,13 @@ void container_periodic_base::region_count() {
 
 /** Clears a container of particles. */
 void container_periodic::clear() {
-	for(int *cop=co;cop<co+oxyz;cop++) *cop=0;
-	char *cp=img;while(cp<img+oxyz) *(cp++)=0;	
+	for(int *cop=co;cop<co+nxyz;cop++) *cop=0;
 }
 
 /** Clears a container of particles, also clearing resetting the maximum radius
  * to zero. */
 void container_periodic_poly::clear() {
-	for(int *cop=co;cop<co+oxyz;cop++) *cop=0;
-	char *cp=img;while(cp<img+oxyz) *(cp++)=0;	
+	for(int *cop=co;cop<co+nxyz;cop++) *cop=0;
 	max_radius=0;
 }
 
@@ -505,7 +497,7 @@ void container_periodic_poly::print_custom(const char *format,const char *filena
  * of the Voronoi algorithm, without any additional calculations such as
  * volume evaluation or cell output. */
 void container_periodic::compute_all_cells() {
-	voronoicell c(*this);
+	voronoicell c;
 	c_loop_all_periodic vl(*this);
 	if(vl.start()) do compute_cell(c,vl);
 	while(vl.inc());
@@ -516,7 +508,7 @@ void container_periodic::compute_all_cells() {
  * of the Voronoi algorithm, without any additional calculations such as
  * volume evaluation or cell output. */
 void container_periodic_poly::compute_all_cells() {
-	voronoicell c(*this);
+	voronoicell c;
 	c_loop_all_periodic vl(*this);
 	if(vl.start()) do compute_cell(c,vl);while(vl.inc());
 }
@@ -526,7 +518,7 @@ void container_periodic_poly::compute_all_cells() {
  * of the container to numerical precision.
  * \return The sum of all of the computed Voronoi volumes. */
 double container_periodic::sum_cell_volumes() {
-	voronoicell c(*this);
+	voronoicell c;
 	double vol=0;
 	c_loop_all_periodic vl(*this);
 	if(vl.start()) do if(compute_cell(c,vl)) vol+=c.volume();while(vl.inc());
@@ -538,7 +530,7 @@ double container_periodic::sum_cell_volumes() {
  * of the container to numerical precision.
  * \return The sum of all of the computed Voronoi volumes. */
 double container_periodic_poly::sum_cell_volumes() {
-	voronoicell c(*this);
+	voronoicell c;
 	double vol=0;
 	c_loop_all_periodic vl(*this);
 	if(vl.start()) do if(compute_cell(c,vl)) vol+=c.volume();while(vl.inc());

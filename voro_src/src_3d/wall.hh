@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
@@ -85,6 +85,7 @@ struct wall_cylinder : public wall {
 		const int w_id;
 		const double xc,yc,zc,xa,ya,za,asi,rc;
 };
+
 
 /** \brief A class representing a conical wall object.
  *

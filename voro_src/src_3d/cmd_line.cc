@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
@@ -24,7 +24,7 @@ const int max_regions=16777216;
 
 // This message gets displayed if the user requests the help flag
 void help_message() {
-	puts("Voro++ version 0.4.6, by Chris H. Rycroft (UC Berkeley/LBL)\n\n"
+	puts("Voro++ version 0.4.5, by Chris H. Rycroft (UC Berkeley/LBL)\n\n"
 	     "Syntax: voro++ [options] <x_min> <x_max> <y_min>\n"
 	     "               <y_max> <z_min> <z_max> <filename>\n\n"
 	     "By default, the utility reads in the input file of particle IDs and positions,\n"
@@ -111,7 +111,7 @@ void custom_output_message() {
 
 // Ths message is displayed if the user requests version information
 void version_message() {
-	puts("Voro++ version 0.4.6 (October 17th 2013)");
+	puts("Voro++ version 0.4.5 (July 27th 2012)");
 }
 
 // Prints an error message. This is called when the program is unable to make
@@ -126,7 +126,7 @@ template<class c_loop,class c_class>
 void cmd_line_output(c_loop &vl,c_class &con,const char* format,FILE* outfile,FILE* gnu_file,FILE* povp_file,FILE* povv_file,bool verbose,double &vol,int &vcc,int &tp) {
 	int pid,ps=con.ps;double x,y,z,r;
 	if(con.contains_neighbor(format)) {
-		voronoicell_neighbor c(con);
+		voronoicell_neighbor c;
 		if(vl.start()) do if(con.compute_cell(c,vl)) {
 			vl.pos(pid,x,y,z,r);
 			if(outfile!=NULL) c.output_custom(format,pid,x,y,z,r,outfile);
@@ -143,7 +143,7 @@ void cmd_line_output(c_loop &vl,c_class &con,const char* format,FILE* outfile,FI
 			if(verbose) {vol+=c.volume();vcc++;}
 		} while(vl.inc());
 	} else {
-		voronoicell c(con);
+		voronoicell c;
 		if(vl.start()) do if(con.compute_cell(c,vl)) {
 			vl.pos(pid,x,y,z,r);
 			if(outfile!=NULL) c.output_custom(format,pid,x,y,z,r,outfile);
@@ -265,12 +265,12 @@ int main(int argc,char **argv) {
 			double w0=atof(argv[i++]),w1=atof(argv[i++]);
 			double w2=atof(argv[i++]),w3=atof(argv[i++]);
 			double w4=atof(argv[i++]),w5=atof(argv[i]);
-			wl.add_wall(new wall_plane(-1,0,0,-w0,j));j--;
-			wl.add_wall(new wall_plane(1,0,0,w1,j));j--;
-			wl.add_wall(new wall_plane(0,-1,0,-w2,j));j--;
-			wl.add_wall(new wall_plane(0,1,0,w3,j));j--;
-			wl.add_wall(new wall_plane(0,0,-1,-w4,j));j--;
-			wl.add_wall(new wall_plane(0,0,1,w5,j));j--;
+			wl.add_wall(new wall_plane(-1,0,0,-w0,j));j--;			
+			wl.add_wall(new wall_plane(1,0,0,w1,j));j--;			
+			wl.add_wall(new wall_plane(0,-1,0,-w2,j));j--;			
+			wl.add_wall(new wall_plane(0,1,0,w3,j));j--;			
+			wl.add_wall(new wall_plane(0,0,-1,-w4,j));j--;			
+			wl.add_wall(new wall_plane(0,0,1,w5,j));j--;			
 		} else if(strcmp(argv[i],"-ws")==0) {
 			if(i>=argc-11) {error_message();wl.deallocate();return VOROPP_CMD_LINE_ERROR;}
 			i++;
@@ -487,7 +487,7 @@ int main(int argc,char **argv) {
 		       "Total V. cell volume      : %g\n",tp,((double) tp)/(nx*ny*nz),
 		       vcc,(bx-ax)*(by-ay)*(bz-az),vol);
 	}
-
+			   
 	// Close output files
 	fclose(outfile);
 	if(gnu_file!=NULL) fclose(gnu_file);
@@ -495,3 +495,4 @@ int main(int argc,char **argv) {
 	if(povv_file!=NULL) fclose(povv_file);
 	return 0;
 }
+

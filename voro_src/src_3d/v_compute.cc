@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
@@ -779,6 +779,7 @@ inline bool voro_compute<c_class>::face_z_test(v_cell &c,double x0,double y0,dou
 	return true;
 }
 
+
 /** This routine checks to see whether a point is within a particular distance
  * of a nearby region. If the point is within the distance of the region, then
  * the routine returns true, and computes the maximum distance from the point
@@ -973,8 +974,7 @@ inline void voro_compute<c_class>::add_list_memory(int*& qu_s,int*& qu_e) {
 	if(qu_s<=qu_e) {
 		while(qu_s<qu_e) *(qu_c++)=*(qu_s++);
 	} else {
-		while(qu_s<qu_l) *(qu_c++)=*(qu_s++);
-		qu_s=qu;
+		while(qu_s<qu_l) *(qu_c++)=*(qu_s++);qu_s=qu;
 		while(qu_s<qu_e) *(qu_c++)=*(qu_s++);
 	}
 	delete [] qu;

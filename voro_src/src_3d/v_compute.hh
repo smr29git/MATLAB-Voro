@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 

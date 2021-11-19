@@ -1,6 +1,6 @@
 // Voro++, a 3D cell-based Voronoi library
 //
-// Author   : Chris H. Rycroft (Harvard University / LBL)
+// Author   : Chris H. Rycroft (LBL / UC Berkeley)
 // Email    : chr@alum.mit.edu
 // Date     : August 30th 2011
 
@@ -126,9 +126,6 @@ class container_base : public voro_base, public wall_list {
 		const double az;
 		/** The maximum z coordinate of the container. */
 		const double bz;
-		/** The maximum length squared that could be encountered in the
-		 * Voronoi cell calculation. */
-		const double max_len_sq;
 		/** A boolean value that determines if the x coordinate in
 		 * periodic or not. */
 		const bool xperiodic;
@@ -377,7 +374,7 @@ class container : public container_base, public radius_mono {
 		 * \param[in] fp a file handle to write to. */
 		template<class c_loop>
 		void draw_cells_gnuplot(c_loop &vl,FILE *fp) {
-			voronoicell c(*this);double *pp;
+			voronoicell c;double *pp;
 			if(vl.start()) do if(compute_cell(c,vl)) {
 				pp=p[vl.ijk]+ps*vl.q;
 				c.draw_gnuplot(*pp,pp[1],pp[2],fp);
@@ -404,7 +401,7 @@ class container : public container_base, public radius_mono {
 		 * \param[in] fp a file handle to write to. */
 		template<class c_loop>
 		void draw_cells_pov(c_loop &vl,FILE *fp) {
-			voronoicell c(*this);double *pp;
+			voronoicell c;double *pp;
 			if(vl.start()) do if(compute_cell(c,vl)) {
 				fprintf(fp,"// cell %d\n",id[vl.ijk][vl.q]);
 				pp=p[vl.ijk]+ps*vl.q;
@@ -435,13 +432,13 @@ class container : public container_base, public radius_mono {
 		void print_custom(c_loop &vl,const char *format,FILE *fp) {
 			int ijk,q;double *pp;
 			if(contains_neighbor(format)) {
-				voronoicell_neighbor c(*this);
+				voronoicell_neighbor c;
 				if(vl.start()) do if(compute_cell(c,vl)) {
 					ijk=vl.ijk;q=vl.q;pp=p[ijk]+ps*q;
 					c.output_custom(format,id[ijk][q],*pp,pp[1],pp[2],default_radius,fp);
 				} while(vl.inc());
 			} else {
-				voronoicell c(*this);
+				voronoicell c;
 				if(vl.start()) do if(compute_cell(c,vl)) {
 					ijk=vl.ijk;q=vl.q;pp=p[ijk]+ps*q;
 					c.output_custom(format,id[ijk][q],*pp,pp[1],pp[2],default_radius,fp);
@@ -628,7 +625,7 @@ class container_poly : public container_base, public radius_poly {
 		 * \param[in] fp a file handle to write to. */
 		template<class c_loop>
 		void draw_cells_pov(c_loop &vl,FILE *fp) {
-			voronoicell c(*this);double *pp;
+			voronoicell c;double *pp;
 			if(vl.start()) do if(compute_cell(c,vl)) {
 				fprintf(fp,"// cell %d\n",id[vl.ijk][vl.q]);
 				pp=p[vl.ijk]+ps*vl.q;
@@ -659,13 +656,13 @@ class container_poly : public container_base, public radius_poly {
 		void print_custom(c_loop &vl,const char *format,FILE *fp) {
 			int ijk,q;double *pp;
 			if(contains_neighbor(format)) {
-				voronoicell_neighbor c(*this);
+				voronoicell_neighbor c;
 				if(vl.start()) do if(compute_cell(c,vl)) {
 					ijk=vl.ijk;q=vl.q;pp=p[ijk]+ps*q;
 					c.output_custom(format,id[ijk][q],*pp,pp[1],pp[2],pp[3],fp);
 				} while(vl.inc());
 			} else {
-				voronoicell c(*this);
+				voronoicell c;
 				if(vl.start()) do if(compute_cell(c,vl)) {
 					ijk=vl.ijk;q=vl.q;pp=p[ijk]+ps*q;
 					c.output_custom(format,id[ijk][q],*pp,pp[1],pp[2],pp[3],fp);
