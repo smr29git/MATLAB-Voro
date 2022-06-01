@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include "mex.h"
 #include <cmath>
@@ -19,6 +18,15 @@ int powerfn(double, double, double, double, double, double, const int&, double*,
 */
 
 int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,double z_max,const int& N,double* X,double* w, double* vol, double* trans, double* xc,bool period){
+
+  /* Inputs are x_min,x_max,y_min,y_max,z_min,z_max which are coordinates of the box
+  N is the number of seeds/generators
+  X is a pointer to the coordinates of the seeds/generators
+  w is a pointer to the weights
+  vol is a pointer to the volumes
+  trans is a pointer to the 2nd moments
+  xc is a pointer to the cell centroids
+  period is a boolean controlling the periodicity */
 
   // The numbers n_x,n_y,n_z are related to efficiency of the calculations in making a periodic cell
 
@@ -371,13 +379,12 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
     }
   }
 
-  // At this stage we have parsed all the arguments and now can sensibly process them to make the output data
+  // At this stage we have parsed all the arguments and now can sensibly process them to produce the output data
 
   // Output variables
-
-  double* XC;
-  double* V;
-  double* T;
+  double* XC; // The centroids
+  double* V;  // The cell volumes
+  double* T;  // The transport cost
 
   // Set the first return value to be the volumes of the cells
   plhs[0]=mxCreateDoubleMatrix(N,1,mxREAL);
@@ -396,10 +403,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   NP=powerfn(xmin,xmax,ymin,ymax,zmin,zmax,N,X,W,V,T,XC,period);
 
   // Clean up
-
   if(Wflag){
     delete [] W;
   }
-
 }
 

@@ -28,7 +28,6 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
   xc is a pointer to the cell centroids
   VFN is a pointer to a mex array
   period is a boolean controlling the periodicity */
-
   
   // The numbers n_x,n_y,n_z are related to efficiency of the calculations in making a periodic cell
   
@@ -49,7 +48,6 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
   }
 
   // Calculate the cells
-
   c_loop_all cla(*con);
   voronoicell_neighbor c;
 
@@ -77,8 +75,11 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
 	// Populate the arrays for return variables
 	vol[id]=V;
 	trans[id]=T;
-	xc[id]=cx+x;xc[id+N]=cy+y;xc[id+2*N]=cz+z;
 	
+	// Return the centroid relative to the (remapped) seed location
+	xc[id]=cx+x;xc[id+N]=cy+y;xc[id+2*N]=cz+z;
+
+	// Increment the number of particles
 	Np++;
 
 	// Create a vector to store the vertices of the cell
@@ -87,9 +88,8 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
 	// Calculate the number of vertices of the cell
 	int Nv=vs.size()/3;
 
-	// Create a double matrix to enter into the cell array to return to MatLab
-	mxArray* tmp;
-	double* tmpV;
+	// Create a double matrix to enter into the cell array to return to MatLab, to contain the vertices
+	mxArray* tmp;double* tmpV;
 	tmp=mxCreateDoubleMatrix(Nv,3,mxREAL);
 	tmpV=mxGetPr(tmp);
 
@@ -206,6 +206,8 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   double* box;
   double* X;
   double* W;
+
+  // Number of seeds/generators
   int N;
   bool period=false;
 

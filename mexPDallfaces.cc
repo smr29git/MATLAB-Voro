@@ -27,17 +27,8 @@ int powerfn(double x_min,double x_max,double y_min,double y_max,double z_min,dou
   trans is a pointer to the 2nd moments
   xc is a pointer to the cell centroids
   VFN is a pointer to a mex array
-  period is a boolean controlling the periodicity */  /* Inputs are x_min,x_max,y_min,y_max,z_min,z_max which are coordinates of the box
-  N is the number of seeds/generators
-  X is a pointer to the coordinates of the seeds/generators
-  w is a pointer to the weights
-  vol is a pointer to the volumes
-  trans is a pointer to the 2nd moments
-  xc is a pointer to the cell centroids
-  VFN is a pointer to a mex array
   period is a boolean controlling the periodicity */
-
-  
+    
   // The numbers n_x,n_y,n_z are related to efficiency of the calculations in making a periodic cell
   
   const int n_x=6,n_y=6,n_z=6;
