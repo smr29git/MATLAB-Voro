@@ -2,7 +2,6 @@
 #include "mex.h"
 #include <cmath>
 #include "voro++_2d.hh"
-
 //#include "matrix.h"
 
 using namespace std;
@@ -646,7 +645,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   V=mxGetPr(plhs[0]);
 
   // Set the second return value to be the transport costs of the cells
-  plhs[1]=mxCreateDoubleMatrix(N,2,mxREAL);
+  plhs[1]=mxCreateDoubleMatrix(N,1,mxREAL);
   T=mxGetPr(plhs[1]);
 
   // Set the third reutrn value to be the centroids of the cells

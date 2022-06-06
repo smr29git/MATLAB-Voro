@@ -410,23 +410,37 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
 	if(xmax<xmin || ymax<ymin){
 	  mexErrMsgIdAndTxt("mexPD:InputArguments", "Specify the box dimensions in the form [xmin ymin xmax ymax] with xmax>xmin and ymax>ymin");
 	}
-	  
-	X=mxGetPr(prhs[1]);
-	int Xrows = mxGetM(prhs[1]);
-	    
-	W=mxGetPr(prhs[2]);
-	int Wrows = mxGetM(prhs[2]);
-	    
-	// Error check is Xrows=Wrows?
-	if(Xrows!=Wrows){
-	  mexErrMsgIdAndTxt("mexPD:ArraySize","The arrays containing the seed locations and weights must be the same size");
+
+	
+	if(rows2!=rows3){
+	  mexErrMsgIdAndTxt("mexPD:ArraySize","The arrays containing the generator locations and weights must be the same size");
 	}
-	N=Xrows;
+	else{
+	  X=mxGetPr(prhs[1]);
+	  N=rows2;
+	  W=mxGetPr(prhs[2]);
+	}
       }
+      /*	X=mxGetPr(prhs[1]);
+		int Xrows = mxGetM(prhs[1]);
+	    
+		W=mxGetPr(prhs[2]);
+		int Wrows = mxGetM(prhs[2]);
+	    
+		// Error check is Xrows=Wrows?
+		if(Xrows!=Wrows){
+		mexErrMsgIdAndTxt("mexPD:ArraySize","The arrays containing the seed locations and weights must be the same size");
+		}
+		N=Xrows;
+		}*/
     }
   } else if(nrhs==4){
-    // In this case we have specified four arguments, they must be box size, generator locations, weights and a periodicity flag for both directions
 
+      /*
+      In this case we have the following possible inputs
+      1. box corners, generator locations, weights, periodic - bx (1x4), x (Nx2), w (Nx1) and periodic (bool)
+    */
+    
     mxClassID cat1;
     mxClassID cat2;
     
@@ -440,7 +454,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
     cat4=mxGetClassID(prhs[3]);
 
     if(!(cat1==mxDOUBLE_CLASS && cat2==mxDOUBLE_CLASS && cat3==mxDOUBLE_CLASS && cat4==mxLOGICAL_CLASS)){
-      mexErrMsgIdAndTxt("mexPD:InputArguments","When specifiying four arguments these should be (box,x,w,periodic) where box is a 1x2 double array, x is an Nx2 double array, w is an Nx1 double array and periodic is a boolean variable");
+      mexErrMsgIdAndTxt("mexPD:InputArguments","When specifiying four arguments these should be (box,x,w,periodic) where box is a 1x4 double array, x is an Nx2 double array, w is an Nx1 double array and periodic is a boolean variable");
     }
     else{
 
@@ -457,29 +471,31 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
       int rows3=mxGetM(prhs[2]);
       int cols3=mxGetN(prhs[2]);
 
-      if(!(rows1==1 && cols1==2 && cols2==2 && cols3==1)){
-	mexErrMsgIdAndTxt("mexPD:ArraySize","The first three arguments must be box dimensions (1x2 array), generator locations (Nx2 array), and weights (Nx1 array) ");
+      if(!(rows1==1 && cols1==4 && cols2==2 && cols3==1)){
+	mexErrMsgIdAndTxt("mexPD:ArraySize","The first three arguments must be box dimensions (1x4 array), generator locations (Nx2 array), and weights (Nx1 array) ");
       }
       else{
 
 	box=mxGetPr(prhs[0]);
-	xmax=box[0];
-	ymax=box[1];
-	  
-	X=mxGetPr(prhs[1]);
-	int Xrows = mxGetM(prhs[1]);
-	  
-	W=mxGetPr(prhs[2]);
-	int Wrows = mxGetM(prhs[2]);
-	 
-	// Error check is Xrows=Wrows?
-	if(Xrows!=Wrows){
+	xmin=box[0];ymin=box[1];
+	xmax=box[2];ymax=box[3];
+
+	if(xmax<xmin || ymax<ymin){
+	  mexErrMsgIdAndTxt("mexPD:InputArguments", "Specify the box dimensions in the form [xmin ymin xmax ymax] with xmax>xmin and ymax>ymin");
+	}
+
+	if(rows2!=rows3){
 	  mexErrMsgIdAndTxt("mexPD:ArraySize","The arrays containing the seed locations and weights must be the same size");
 	}
-	N=Xrows;
+	else{
+	   N=rows2;
+	  X=mxGetPr(prhs[1]);
+	  W=mxGetPr(prhs[2]);
+	}
       }
     }
-  }  else if(nrhs==5){
+  }
+  else if(nrhs==5){
     // In this case we have specified five arguments, they must be box size, generator locations, weights and two periodicity flags
 
     mxClassID cat1;
@@ -498,7 +514,7 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
     cat5=mxGetClassID(prhs[4]);
     
     if(!(cat1==mxDOUBLE_CLASS && cat2==mxDOUBLE_CLASS && cat3==mxDOUBLE_CLASS && cat4==mxLOGICAL_CLASS && cat5==mxLOGICAL_CLASS)){
-      mexErrMsgIdAndTxt("mexPD:InputArguments","When specifiying five arguments these should be (box,x,w,periodic_x,periodic_y) where box is a 1x2 double array, x is an Nx2 double array, w is an Nx1 double array and periodic_x and periodic_y are boolean variables");
+      mexErrMsgIdAndTxt("mexPD:InputArguments","When specifiying five arguments these should be (box,x,w,periodic_x,periodic_y) where box is a 1x4 double array, x is an Nx2 double array, w is an Nx1 double array and periodic_x and periodic_y are boolean variables");
     }
     else{
 
@@ -515,26 +531,27 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
       int rows3=mxGetM(prhs[2]);
       int cols3=mxGetN(prhs[2]);
 
-      if(!(rows1==1 && cols1==2 && cols2==2 && cols3==1)){
-	mexErrMsgIdAndTxt("mexPD:ArraySize","The first three arguments must be box dimensions (1x2 array), generator locations (Nx2 array), and weights (Nx1 array) ");
+      if(!(rows1==1 && cols1==4 && cols2==2 && cols3==1)){
+	mexErrMsgIdAndTxt("mexPD:ArraySize","The first three arguments must be box dimensions (1x4 array), generator locations (Nx2 array), and weights (Nx1 array) ");
       }
       else{
 
 	box=mxGetPr(prhs[0]);
-	xmax=box[0];
-	ymax=box[1];
-	  
-	X=mxGetPr(prhs[1]);
-	int Xrows = mxGetM(prhs[1]);
-	  
-	W=mxGetPr(prhs[2]);
-	int Wrows = mxGetM(prhs[2]);
-	 
-	// Error check is Xrows=Wrows?
-	if(Xrows!=Wrows){
+	xmin=box[0];ymin=box[1];
+	xmax=box[2];ymax=box[3];
+
+	if(xmax<xmin || ymax<ymin){
+	  mexErrMsgIdAndTxt("mexPD:InputArguments", "Specify the box dimensions in the form [xmin ymin xmax ymax] with xmax>xmin and ymax>ymin");
+	}
+
+	if(rows2!=rows3){
 	  mexErrMsgIdAndTxt("mexPD:ArraySize","The arrays containing the seed locations and weights must be the same size");
 	}
-	N=Xrows;
+	else{
+	  N=rows2;
+	  X=mxGetPr(prhs[1]);
+	  W=mxGetPr(prhs[2]);
+	}
       }
     }
   }
@@ -547,12 +564,15 @@ void mexFunction(int nlhs,mxArray *plhs[],int nrhs,const mxArray *prhs[]){
   double* V;
   double* T;
 
+  // Set the first return value to be the volumes of the cells
   plhs[0]=mxCreateDoubleMatrix(N,1,mxREAL);
   V=mxGetPr(plhs[0]);
 
+  // Set the second return value to be the transport costs of the cells
   plhs[1]=mxCreateDoubleMatrix(N,1,mxREAL);
   T=mxGetPr(plhs[1]);
 
+  // Set the third reutrn value to be the centroids of the cells
   plhs[2]=mxCreateDoubleMatrix(N,2,mxREAL);
   XC=mxGetPr(plhs[2]);
 
