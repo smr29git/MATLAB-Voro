@@ -1,51 +1,88 @@
-function h=plot_cells2d(bx,x,vfn)
-%
-% h=plot_cells2d(bx,x,vfn)
-%
-% function to plot the cells
-%
-% bx is the bounding box in the form of limits [xmin ymin xmax ymax]
-% x is an Nx2 array of seed locations
-% w is an Nx1 array of weights
-% vfn is an {N,2} cell array containing the vertices of each cell and the neighbour indices
+function h=plot_cells2d(vfn,varargin)
 
-%    xr=cell2mat(vfn(:,3));
+% h=plot_cells2d(vfn,OPTid,OPTcellcolour);
+% 
+% Plot individual grains
+%   input aguments
+%
+%   vfn      : vertex and neighbour data
+%   OPTid    : an optional list of cell ids in an nid x 1 vector
+%   OPTcellcolour: an optional argument that contains either a single colour for all the cells or a
+%              list of colours for each of the cells to be plotted
+%    
+%   output arguments
+%
+%   h : cell array of handles to patch objects that make up the faces of each of the plotted cells
+%       this can be used to alter the styles after the plot    
+%   id: the cell ids that were plotted
     
-    lightblue=[0.7,0.8,1.0];
-    
-    figure;
-    clf;
-    
-    [N,~]=size(x);
-    [Nv,~]=size(vfn);
-    
-    if(Nv~=N)
-        error('x should be Nx2 array and vfn an {N,2} cell array');
+% Obtain the number of cells
+    [Nc,~]=size(vfn);
+
+    if(nargin>3)
+        error('Too many input arguments\nUsage is plot_cells(vfn), plot_cells(vfn,id) or plot_cells(vfn,id,c) where c is a colour');
+    elseif(nargin>1)
+        % Get the cell IDs to plot
+        id=varargin{1};
+
+        % Get the number of cells to plot
+        [nid,mid]=size(id);
+        if(mid>1)
+            error('The lits of cell ids should be an nid x 1 vector')
+        end
+        
+        % Check that the minimum id no less than 1 and the maximum is no greater than Nc
+        if(min(id)<1 || max(id)>Nc)
+            error('The cell ids must be in the range [1,Nc] where Nc is the number of cells')
+        end
+        
+        % Get unique cellids to be plotted
+        [id,iid]=unique(id);
+
+        if(nargin==3)
+            % Here we assume that arguments are (vfn,id,c)
+            % Get the grain colours
+            cellcolour=varargin{2};
+            [nc,~]=size(cellcolour);
+            if(nc==1)
+                cellcolour=repmat(cellcolour,nid,1);
+            elseif(nc~=nid)
+                error('The number of cells to plot and the length of the list of colours should be the same');
+            else
+                cellcolour=cellcolour(iid,:);
+            end
+        else
+            % Here we assume that the arguments are (vfn,id)
+            [nid,~]=size(id);
+            cellcolour=repmat('r',nid,1);
+        end
+    else
+        id=(1:Nc)';nid=Nc;
+        cellcolour=repmat('r',nid,1);
     end
-    
-    hold on
-    for i=1:N,
-        V=vfn{i,1};
-        if(~isempty(V))    
-    
-            V=[V;V(1,:)];
-            h(i)=patch(V(:,1),V(:,2),lightblue);
-            set(h(i),'LineWidth',2);
-            plot(x(i,1),x(i,2),'r.','Markersize',5);
-        end            
+
+    % Get the new number of cells to plotted (after unique)
+    [nid,~]=size(id);
+
+    % Loop through each of the cells
+    for j=1:nid,
+        cid=id(j);
+        % Can only plot non-empty cells
+        if(~isempty(vfn{cid,1}))
+            
+            % Obtain the vertices, faces and neighbours of the cell
+            verts=vfn{cid,1};
+            verts=[verts;verts(1,:)];
+
+            hold on
+            h(j)=patch(verts(:,1),verts(:,2),cellcolour(j,:));
+            set(h(j),'LineWidth',2);
+            hold off
+
+        end
     end
 
-    % Plot the bounding box
-    bbx=[bx(1) bx(2);
-         bx(1) bx(4);
-         bx(3) bx(4);
-         bx(3) bx(2);
-         bx(1) bx(2);
-         ];
-
-    plot(bbx(:,1),bbx(:,2),'g-','LineWidth',2);
-    %axis([min(bbx(:,1)) max(bbx(:,1)) min(bbx(:,2)) max(bbx(:,2))]);
-    axis equal
-    hold off
+    %            plot(x(i,1),x(i,2),'r.','Markersize',5);
+    
 end
 
