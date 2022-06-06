@@ -1,5 +1,6 @@
 % mexPD_2d.m Help file for mexPD MEX-file
 %
+%
 %  mexPD_2d.cc - Uses the c++ library voro++ to generate 2D Laguerre diagrams
 %  in rectangular domains, with and without periodicity.
 %
@@ -21,16 +22,31 @@
 %   If periodic is ommitted the assumption is that the periodic is 'false'
 %   If w is ommitted then the assumption is that the weights are all zero
 %   If box is ommitted then the assumption is that box=[0 0 1 1] so the
-%   domain is the unit square
+%   domain is the unit square.
+%   If only one periodic flag is given then periodic_x=periodic_y
 %
-%   It is therefore possible to call mexPD with the following arguments
+
+%   It is currently possible to call mexPD_2d with the following arguments
 %
-%     [v,t,xc]=mexPD(x);
+%    With one argument
 %
-%     [v,t,xc]=mexPD(box,x);
-%     [v,t,xc]=mexPD(x,w);
-%     [v,t,xc]=mexPD(x,periodic);
+%     [area,tr,xc,vfn]=mexPD_2d(x);
 %
-%     [v,t,xc]=mexPD(box,x,w);
-%     [v,t,xc]=mexPD(box,x,periodic);
-%     [v,t,xc]=mexPD(x,w,periodic);
+%    With two arguments
+%
+%     [area,tr,xc,vfn]=mexPD_2d(bx,x);
+%     [area,tr,xc,vfn]=mexPD_2d(x,w);
+%
+%    With three arguments, per_x=per_y=per when per is specified
+%
+%     [area,tr,xc,vfn]=mexPD_2d(bx,x,w);
+%     [area,tr,xc,vfn]=mexPD_2d(bx,x,periodic);
+%     [area,tr,xc,vfn]=mexPD_2d(x,w,periodic);
+%
+%    With four arguments, periodic_x=periodic_y
+%
+%     [area,tr,xc,vfn]=mexPD_2d(bx,x,w,periodic);
+%
+%    With five arguments
+%
+%     [area,tr,xc,vfn]=mexPD_2d(bx,x,w,periodic_x,periodic_y);
