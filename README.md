@@ -1,5 +1,5 @@
 # MATLAB-Voro: MATLAB mex files for the Voro++ software library
-MATLAB mex files to run [Voro++](https://math.lbl.gov/voro++/) for calculating 2D and 3D [Laguerre diagrams/power diagrams](https://en.wikipedia.org/wiki/Power_diagram).
+MATLAB mex files to run [Voro++](https://math.lbl.gov/voro++/) for calculating [Laguerre diagrams/power diagrams](https://en.wikipedia.org/wiki/Power_diagram) in 2D and 3D periodic and non-periodic domains.
 
 ## Installation ##
 
@@ -9,6 +9,14 @@ MATLAB mex files to run [Voro++](https://math.lbl.gov/voro++/) for calculating 2
 ## Examples ##
 
 Live scripts & PDF
+
+## Software limitations ##
+
+* The domain of the Laguerre tessellation must be a box (a rectangle in 2D or a cuboid in 3D). The code does not compute unbounded Laguerre tessellations. 
+* 3D code: If the Laguerre tessellation is non-periodic, then all the seeds must lie inside the bounding box, otherwise they are simply ignored.
+
+We plan to address some of these limitations in a future update, as well as adding more sophisticated visualisation tools.
+
 
 ## Related software ##
 
@@ -21,5 +29,3 @@ Live scripts & PDF
 * License file and info
 * Cite the Voro++ website, repository and paper
 * Add the authors of this page (Steve and David) and cite any relevant papers where we've used this code (just the Tata paper for now, Mason's future papers)
-* Upload Steve's latest versions of the cc files with the extra comments
-* Add a list of limitations/future updates: 2D, more sophisticated visualisation code, domain must be a box, seeds must be inside the box if periodic=false, ...
