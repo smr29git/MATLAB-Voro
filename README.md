@@ -12,8 +12,9 @@ Live scripts & PDF
 
 ## Software limitations ##
 
-* The domain of the Laguerre tessellation must be a box (a rectangle in 2D or a cuboid in 3D). The code does not compute unbounded Laguerre tessellations. 
-* 3D code: If the Laguerre tessellation is non-periodic, then all the seeds must lie inside the bounding box, otherwise they are simply ignored.
+* The domain of the Laguerre tessellation must be a box (a rectangle in 2D or a cuboid in 3D). In particular, it does not compute unbounded Laguerre tessellations or, e.g., Laguerre tessellations of polygonal domains. 
+* 3D code: If the Laguerre tessellation is non-periodic, then all the seeds must lie inside the bounding box, otherwise they are simply discarded. This limitation does not apply to 3D periodic code or the 2D code.
+* 3D code: The Laguerre tessellation must be either non-periodic or triply periodic (periodic in all 3 directions). This limitation does not apply to the 2D code, where you can choose the diagram to be periodic in the x- or y-direction (Laguerre tessellation of a flat cylinder), both directions (Laguerre tessellation of a flat torus) or neither direction.
 
 We plan to address some of these limitations in a future update, as well as adding more sophisticated visualisation tools.
 
