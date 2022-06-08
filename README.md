@@ -12,7 +12,12 @@ See the MATLAB live scripts ``Examples2d.mlx`` and ``Examples3d.mlx`` or the cor
 
 ## Voro++ ##
 
-Insert: Cite the Voro++ website, repository and paper. <https://math.lbl.gov/voro++/>, <https://github.com/chr1shr/voro>
+This code relies on Voro++ by Chris H. Rycroft:
+* <https://math.lbl.gov/voro++/>
+* <https://github.com/chr1shr/voro>
+
+When using this code please consider citing him and the following paper:
+* Chris H. Rycroft, "Voro++: A three-dimensional Voronoi cell library in C++", *Chaos* 19, 041111 (2009).
 
 ## License ##
 
@@ -38,7 +43,6 @@ This repository was created by
 * [Steve Roper](https://www.gla.ac.uk/schools/mathematicsstatistics/staff/stevenroper/#), University of Glasgow
 * [David Bourne](http://www.macs.hw.ac.uk/~db92/), Heriot-Watt University and the Maxwell Institute for Mathematical Sciences
 
-This code was used to create Laguerre tessellations for the following papers:
+This code was used to create Laguerre tessellations for the following paper:
 
-* Egan, C.P., Bourne, D.P., Cotter, C.J., Cullen, M.J.P., Pelloni, B., Roper, S.M. & Wilkinson, M. (2022) A new implementation of the geometric method for solving the Eady slice equations. [Preprint](https://cvgmt.sns.it/paper/5457/)
 * Bourne, D.P., Kok, P.J.J., Roper, S.M. & Spanjer, W.D.T. (2020) Laguerre tessellations and polycrystalline microstructures: A fast algorithm for generating grains of given volumes, *Philosophical Magazine*, 100, 2677-2707. <https://doi.org/10.1080/14786435.2020.1790053>
