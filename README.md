@@ -16,8 +16,9 @@ This code relies on Voro++ by Chris H. Rycroft:
 * <https://math.lbl.gov/voro++/>
 * <https://github.com/chr1shr/voro>
 
-When using this code please consider citing him and the following paper:
+When using this code please consider citing the following paper:
 * Chris H. Rycroft, "Voro++: A three-dimensional Voronoi cell library in C++", *Chaos* 19, 041111 (2009).
+
 
 ## License ##
 
