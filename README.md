@@ -23,7 +23,7 @@ The folder `voro_src` is a snapshot of Voro++. We modified the files ``cell_2d.c
 
 ## License ##
 
-Insert: Add info on license.
+See LICENCE.md
 
 ## Software limitations ##
 
