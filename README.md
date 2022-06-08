@@ -19,6 +19,7 @@ This code relies on Voro++ by Chris H. Rycroft:
 When using this code please consider citing the following paper:
 * Chris H. Rycroft, "Voro++: A three-dimensional Voronoi cell library in C++", *Chaos* 19, 041111 (2009).
 
+The folder `voro_src` is a snapshot from the Voro++ website <https://math.lbl.gov/voro++/about.html>. [Check! This website does not include the 2d code?] We modified the files ``cell_2d.cc``, ``cell_2d.hh``, ``cell.cc`` and ``cell.hh`` to compute the second moments of the Laguerre cells.
 
 ## License ##
 
@@ -47,3 +48,5 @@ This repository was created by
 This code was used to create Laguerre tessellations for the following paper:
 
 * Bourne, D.P., Kok, P.J.J., Roper, S.M. & Spanjer, W.D.T. (2020) Laguerre tessellations and polycrystalline microstructures: A fast algorithm for generating grains of given volumes, *Philosophical Magazine*, 100, 2677-2707. <https://doi.org/10.1080/14786435.2020.1790053>
+
+Please consider citing this paper if you use this software.
