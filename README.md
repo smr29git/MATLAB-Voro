@@ -49,4 +49,4 @@ This code was used to create Laguerre tessellations for the following paper:
 
 * Bourne, D.P., Kok, P.J.J., Roper, S.M. & Spanjer, W.D.T. (2020) Laguerre tessellations and polycrystalline microstructures: A fast algorithm for generating grains of given volumes, *Philosophical Magazine*, 100, 2677-2707. <https://doi.org/10.1080/14786435.2020.1790053>
 
-Please consider citing this paper if you use this software.
+Please consider citing this paper if you find our code useful.
