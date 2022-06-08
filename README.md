@@ -21,7 +21,7 @@ When using this code please consider citing the following paper:
 
 The folder `voro_src` is a snapshot of Voro++. We modified the files ``cell_2d.cc``, ``cell_2d.hh``, ``cell.cc`` and ``cell.hh`` to compute the second moments of the Laguerre cells.
 
-## License ##
+## Licence ##
 
 See LICENCE.md
 
