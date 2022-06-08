@@ -19,7 +19,7 @@ This code relies on Voro++ by Chris H. Rycroft:
 When using this code please consider citing the following paper:
 * Chris H. Rycroft, "Voro++: A three-dimensional Voronoi cell library in C++", *Chaos* 19, 041111 (2009).
 
-The folder `voro_src` is a snapshot from the Voro++ website <https://math.lbl.gov/voro++/about.html>. [Check! This website does not include the 2d code?] We modified the files ``cell_2d.cc``, ``cell_2d.hh``, ``cell.cc`` and ``cell.hh`` to compute the second moments of the Laguerre cells.
+The folder `voro_src` is a snapshot of Voro++. We modified the files ``cell_2d.cc``, ``cell_2d.hh``, ``cell.cc`` and ``cell.hh`` to compute the second moments of the Laguerre cells.
 
 ## License ##
 
