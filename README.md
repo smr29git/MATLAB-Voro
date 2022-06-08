@@ -4,9 +4,7 @@ MATLAB mex files to run [Voro++](https://math.lbl.gov/voro++/) for calculating [
 ## Installation ##
 
 * Download and change directory to the top-level.
-* In MATLAB, run the script ``makemex.m``
-
-Insert: 2d installation instructions.
+* In MATLAB, run the scripts ``makemex.m`` and ``makemex2d.m``
 
 ## Examples ##
 
