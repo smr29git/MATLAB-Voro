@@ -75,7 +75,7 @@ int powerfn(double bx_xmin,double bx_xmax,double bx_ymin,double bx_ymax,const in
   
   if(!periodx){
     // Find the maximum and minimum x coordinates of all the points
-    for(int i=1;i<N;i++){
+    for(int i=0;i<N;i++){
       if(X[i]<xmin){xmin=X[i];}
       else if(X[i]>xmax){xmax=X[i];}
     }
@@ -87,7 +87,7 @@ int powerfn(double bx_xmin,double bx_xmax,double bx_ymin,double bx_ymax,const in
 
   if(!periody){
     // Find the maximum and minimum y coordinates of all the points    
-    for(int i=1;i<N;i++){
+    for(int i=0;i<N;i++){
       if(X[i+N]<ymin){ymin=X[i+N];}
       else if(X[i+N]>ymax){ymax=X[i+N];}
     }
